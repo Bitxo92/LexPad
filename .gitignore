@@ -1,0 +1,48 @@
+# Eclipse project files
+
+.metadata/
+
+bin/
+
+tmp/
+
+.settings/
+
+
+# Compiled class files
+
+*.class
+
+
+# Logs and databases
+
+*.log
+
+*.sqlite
+
+
+# Package files
+
+*.jar
+
+*.war
+
+*.ear
+
+
+# External dependencies (JAR files)
+
+/lib/
+
+
+# Bytecode verification
+
+*.jkw
+
+
+# OS-specific files
+
+.DS_Store
+
+Thumbs.db
+
