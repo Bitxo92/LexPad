@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -15,6 +16,7 @@ import javax.swing.JTextArea;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.undo.UndoManager;
+
 
 public class GUI implements ActionListener {
 
@@ -50,6 +52,8 @@ public class GUI implements ActionListener {
     UndoManager um = new UndoManager();
 
     public static void main(String[] args) {
+   
+
         new GUI();
     }
 
@@ -78,10 +82,13 @@ public class GUI implements ActionListener {
                 exitProcedure();
             }
         });
+
+        // Load the icon image and set it as the JFrame icon
+        ImageIcon icon = new ImageIcon("path/to/your/icon.png"); // update the path to your icon image
+        window.setIconImage(icon.getImage());
     }
 
     public void createTextArea() {
-
         textArea = new JTextArea();
         textArea.setFont(format.arial);
 
@@ -238,17 +245,16 @@ public class GUI implements ActionListener {
 
         switch (command) {
             case "New":
-                file.newFile();
+                checkSaveBeforeAction(() -> file.newFile());
                 break;
             case "Open":
-                file.open();
+                checkSaveBeforeAction(() -> file.open());
                 break;
             case "Save As":
                 file.saveAs();
                 break;
             case "Save":
                 file.save();
-                isSaved = true; // mark as saved
                 break;
             case "Exit":
                 exitProcedure();
@@ -301,17 +307,35 @@ public class GUI implements ActionListener {
         }
     }
 
+    private void checkSaveBeforeAction(Runnable action) {
+        if (!isSaved) {
+            int result = JOptionPane.showConfirmDialog(window,
+                    "You have unsaved changes. Do you want to save before continuing?", "Warning",
+                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (result == JOptionPane.YES_OPTION) {
+                file.save();
+                action.run();
+            } else if (result == JOptionPane.NO_OPTION) {
+                action.run();
+            }
+            // If result is CANCEL_OPTION or the dialog is closed, do nothing
+        } else {
+            action.run();
+        }
+    }
+
     private void exitProcedure() {
         if (!isSaved) {
-            int option = JOptionPane.showConfirmDialog(window, "You have unsaved changes. Do you want to save before exiting?", "Exit", JOptionPane.YES_NO_CANCEL_OPTION);
-            if (option == JOptionPane.YES_OPTION) {
+            int result = JOptionPane.showConfirmDialog(window,
+                    "You have unsaved changes. Do you want to save before exiting?", "Warning",
+                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (result == JOptionPane.YES_OPTION) {
                 file.save();
-                if (isSaved) {
-                    System.exit(0);
-                }
-            } else if (option == JOptionPane.NO_OPTION) {
+                System.exit(0);
+            } else if (result == JOptionPane.NO_OPTION) {
                 System.exit(0);
             }
+            // If result is CANCEL_OPTION or the dialog is closed, do nothing
         } else {
             System.exit(0);
         }
